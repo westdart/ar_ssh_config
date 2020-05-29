@@ -1,0 +1,31 @@
+{% for machine in ar_ssh_config_machines.values() %}
+{% if 'public_ip' in machine and machine['public_ip'] != "" %}
+Host {{ machine['hostname'] }}
+        User {{ ar_ssh_config_public_user }}
+        Hostname {{ machine['public_ip'] }}
+
+Host {{ machine['private_ip'] }}
+        User {{ ar_ssh_config_public_user }}
+        Hostname {{ machine['public_ip'] }}
+
+{% endif %}
+{% endfor %}
+
+{% if ar_ssh_config_jump_host | bool %}
+{% for machine in ar_ssh_config_machines.values() %}
+{% if 'public_ip' not in machine or machine['public_ip'] == "" %}
+Host {{ machine['hostname'] }}
+        User {{ ar_ssh_config_private_user }}
+        Hostname {{ machine['private_ip'] }}
+        Port 22
+        ProxyCommand ssh -q -W %h:%p {{ ar_ssh_config_jump_host }}
+
+Host {{ machine['private_ip'] }}
+        User {{ ar_ssh_config_private_user }}
+        Hostname {{ machine['private_ip'] }}
+        Port 22
+        ProxyCommand ssh -q -W %h:%p {{ ar_ssh_config_jump_host }}
+
+{% endif %}
+{% endfor %}
+{% endif %}

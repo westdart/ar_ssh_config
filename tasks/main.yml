@@ -1,0 +1,35 @@
+---
+- name: Create config dirs
+  file:
+    path: "{{ ar_ssh_config_item }}"
+    state: directory
+    mode: 0700
+  with_items:
+    - "{{ ar_ssh_config_base }}"
+    - "{{ ar_ssh_config_path }}"
+  loop_control:
+    loop_var: ar_ssh_config_item
+
+- name: Create ssh config
+  template:
+    src: ../templates/sshconfig.j2
+    dest: "{{ ar_ssh_config_path }}/{{ ar_ssh_config_name }}"
+    mode: 0600
+
+- name: Ensure config dir is included in main ssh config file
+  lineinfile:
+    path: "{{ ar_ssh_config_base }}/config"
+    line: Include {{ ar_ssh_config_dir }}/*
+    insertbefore: BOF
+
+- name: Get server identities
+  shell: grep "^Host" {{ ansible_env.HOME }}/.ssh/config.d/{{ ocp_infra_name }} | awk '{print $NF}'
+  register: server_identities_cmd
+  changed_when: false
+
+- name: Show server identities
+  debug:
+    msg:
+      - "ssh using the following identities:"
+      - "{{ server_identities_cmd.stdout.split('\n') }}"
+
