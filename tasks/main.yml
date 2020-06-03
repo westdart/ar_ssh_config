@@ -23,7 +23,7 @@
     insertbefore: BOF
 
 - name: Get server identities
-  shell: grep "^Host" {{ ansible_env.HOME }}/.ssh/config.d/{{ ocp_infra_name }} | awk '{print $NF}'
+  shell: grep "^Host" {{ ar_ssh_config_path }}/{{ ar_ssh_config_name }} | awk '{print $NF}'
   register: server_identities_cmd
   changed_when: false
 
