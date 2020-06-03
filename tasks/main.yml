@@ -21,6 +21,7 @@
     path: "{{ ar_ssh_config_base }}/config"
     line: Include {{ ar_ssh_config_dir }}/*
     insertbefore: BOF
+    create: yes
 
 - name: Get server identities
   shell: grep "^Host" {{ ar_ssh_config_path }}/{{ ar_ssh_config_name }} | awk '{print $NF}'
