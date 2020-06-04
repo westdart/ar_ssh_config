@@ -34,3 +34,4 @@
       - "ssh using the following identities:"
       - "{{ server_identities_cmd.stdout.split('\n') }}"
 
+- include_tasks: update-known-hosts.yml

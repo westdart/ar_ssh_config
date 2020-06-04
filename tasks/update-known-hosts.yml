@@ -1,0 +1,24 @@
+---
+- name: "Get ssh-key entries"
+  shell: "ssh-keyscan -t rsa {{item}}"
+  with_items: "{{ ar_ssh_config_machines | dict2items | json_query('[*].value.public_ip') }}"
+  register: ar_ssh_config_ssh_keys_out
+  changed_when: false
+
+- set_fact:
+    _ar_ssh_config_ssh_key_entries: "{{ ar_ssh_config_ssh_keys_out | json_query('results[*].stdout') }}"
+
+- name: Ensure known_hosts exits
+  file:
+    path: "{{ ar_ssh_config_known_hosts_path }}"
+    mode: 0600
+    state: touch
+  changed_when: false
+
+- name: "Update known_hosts"
+  lineinfile:
+    path: "{{ ar_ssh_config_known_hosts_path }}"
+    regexp: "^{{ item.split()[0] }}"
+    line: "{{ item }}"
+  with_items: "{{ _ar_ssh_config_ssh_key_entries }}"
+

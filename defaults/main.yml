@@ -2,3 +2,4 @@
 ar_ssh_config_base: "{{ ansible_env.HOME }}/.ssh"
 ar_ssh_config_dir: "config.d"
 ar_ssh_config_path: "{{ ar_ssh_config_base }}/{{ ar_ssh_config_dir }}"
+ar_ssh_config_known_hosts_path: "{{ ar_ssh_config_base }}/known_hosts"
