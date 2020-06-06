@@ -1,7 +1,15 @@
 ---
+- set_fact:
+    server_scans: "{{ ar_ssh_config_machines | dict2items | json_query('[*].value.public_ip') }}"
+
+- debug: var=server_scans
+
 - name: "Get ssh-key entries"
-  shell: "ssh-keyscan -t rsa {{item}}"
-  with_items: "{{ ar_ssh_config_machines | dict2items | json_query('[*].value.public_ip') }}"
+  shell: "ssh-keyscan -t rsa {{ ar_ssh_config_server }}"
+  when: ar_ssh_config_server | length > 0
+  with_items: "{{ server_scans }}"
+  loop_control:
+    loop_var: ar_ssh_config_server
   register: ar_ssh_config_ssh_keys_out
   changed_when: false
 
